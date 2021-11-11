@@ -3,12 +3,7 @@ from copy import deepcopy
 from jelly import Jelly
 from wall import Wall
 
-pygame.init()
-screen_width = 700 # x-axis
-screen_height = 500 # y-axis
-grid_size = 50
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('Jelly No Puzzle')
+
 # redSquare = pygame.image.load("wechat.jpg")
 
 # grid_world = [["w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w"],
@@ -16,33 +11,13 @@ pygame.display.set_caption('Jelly No Puzzle')
 #               ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
 #               ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
 #               ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
-#               ["w", "a", "a", "a", "a", "a", "a", "a", "r", "a", "a", "a", "a", "w"],
-#               ["w", "a", "a", "a", "a", "a", "a", "w", "w", "a", "a", "a", "a", "w"],
-#               ["w", "a", "a", "g", "a", "a", "a", "a", "a", "r", "a", "b", "a", "w"],
-#               ["w", "w", "b", "w", "w", "w", "g", "a", "w", "w", "w", "w", "w", "w"],
+#               ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
+#               ["w", "a", "a", "a", "a", "a", "g", "a", "a", "a", "g", "a", "a", "w"],
+#               ["w", "a", "a", "a", "r", "a", "r", "a", "a", "a", "r", "a", "a", "w"],
+#               ["w", "w", "w", "w", "w", "a", "w", "a", "w", "a", "w", "w", "w", "w"],
 #               ["w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w"]]
 
-grid_world = [["w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w"],
-              ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
-              ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
-              ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
-              ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
-              ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
-              ["w", "a", "a", "a", "a", "a", "g", "a", "a", "a", "g", "a", "a", "w"],
-              ["w", "a", "a", "a", "r", "a", "r", "a", "a", "a", "r", "a", "a", "w"],
-              ["w", "w", "w", "w", "w", "a", "w", "a", "w", "a", "w", "w", "w", "w"],
-              ["w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w"]]
 
-color_set = set()
-
-jelly_list = []
-for i in range(10):
-    for j in range(14):
-        if grid_world[i][j] == "r" or grid_world[i][j] == "g" or grid_world[i][j] == "b":
-            jelly_list.append([(i, j, grid_world[i][j])])
-            color_set.add(grid_world[i][j])
-
-print(jelly_list)
 
 # Function Components
 
@@ -197,7 +172,13 @@ def jelly_fall(grid_world, jelly_list):
             for jelly_item in jelly_list:
                 jelly_fall(grid_world, jelly_list)
 
-def draw_world(grid_world, screen):
+def draw_world(grid_world):
+    pygame.init()
+    screen_width = 700 # x-axis
+    screen_height = 500 # y-axis
+    screen = pygame.display.set_mode((screen_width, screen_height))
+    pygame.display.set_caption('Jelly No Puzzle')
+    grid_size = 50
     
     screen.fill((0, 0, 0))
 
@@ -219,6 +200,9 @@ def draw_world(grid_world, screen):
                 pass
 
     pygame.display.update()
+    import time
+    time.sleep(3)
+    pygame.quit()
 
 def jelly_item_move_left(grid_world, jelly_item, jelly_list):
 
@@ -279,21 +263,28 @@ def jelly_item_move_down(grid_world, jelly_item, jelly_list):
 
     return new_jelly_item
 
-def detect_winning(jelly_list, num_of_colors):
-    if len(jelly_list) == num_of_colors:
-        return True
+def detect_winning(jelly_list):
+    for jelly_item in jelly_list:
+        if len(jelly_item) < 2:
+            return False
 
-    return False
+    return True
 
-running = True
-while (running):
+def run_game(grid_world, eventloop):
+    jelly_list = []
+    for i in range(10):
+        for j in range(14):
+            if grid_world[i][j] == "r" or grid_world[i][j] == "g" or grid_world[i][j] == "b":
+                jelly_list.append([(i, j, grid_world[i][j])])
 
-    for event in pygame.event.get():
+    print(jelly_list)
+    grid_size = 50
+
+    for event in eventloop:
         if event.type == pygame.QUIT:
-            running = False
+            break
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-
             mouse_x, mouse_y = event.pos
 
             for jelly_item in jelly_list:
@@ -317,6 +308,7 @@ while (running):
                                 print("jelly_list: ", jelly_list)
 
                         elif event.button == 3: # right click
+
                             if not check_right_wall_collision(grid_world, jelly_item): 
                                 
                                 jelly_item_move_right(grid_world, jelly_item, jelly_list)
@@ -325,9 +317,27 @@ while (running):
                                 print("jelly_list: ", jelly_list)
 
     
-            if detect_winning(jelly_list, len(color_set)):
+            if detect_winning(jelly_list):
                 print("YOU WIN!")
 
-    draw_world(grid_world, screen)
+    return grid_world, jelly_list
 
-pygame.quit()
+grid_world = [["w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w"],
+            ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
+            ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
+            ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
+            ["w", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "w"],
+            ["w", "a", "a", "a", "a", "a", "a", "a", "r", "a", "a", "a", "a", "w"],
+            ["w", "a", "a", "a", "a", "a", "a", "w", "w", "a", "a", "a", "a", "w"],
+            ["w", "a", "a", "g", "a", "a", "a", "a", "a", "r", "a", "b", "a", "w"],
+            ["w", "w", "b", "w", "w", "w", "g", "a", "w", "w", "w", "w", "w", "w"],
+            ["w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w"]]
+
+if __name__ == '__main__':
+    input_event = pygame.event.Event(pygame.MOUSEBUTTONDOWN)
+    input_event.pos = (3 * 50 + 1, 7 * 50 + 1)
+    input_event.button = 1
+    eventloop = []
+    eventloop.append(input_event)
+    grid_world, jelly_list = run_game(grid_world, eventloop)
+    draw_world(grid_world)
