@@ -118,8 +118,8 @@ def find_merge_jelly(color_jelly_list):
     for item in merge_list:
         append_item = append_item + item
 
-    print("merge list:", merge_list)
-    print("append item:", append_item)
+    # print("merge list:", merge_list)
+    # print("append item:", append_item)
 
     return merge_list, append_item
 
@@ -270,14 +270,14 @@ def detect_winning(jelly_list):
 
     return True
 
-def run_game(grid_world, eventloop):
-    jelly_list = []
-    for i in range(10):
-        for j in range(14):
-            if grid_world[i][j] == "r" or grid_world[i][j] == "g" or grid_world[i][j] == "b":
-                jelly_list.append([(i, j, grid_world[i][j])])
+def run_game(grid_world, eventloop, jelly_list = []):
+    if jelly_list == []:
+        for i in range(10):
+            for j in range(14):
+                if grid_world[i][j] == "r" or grid_world[i][j] == "g" or grid_world[i][j] == "b":
+                    jelly_list.append([(i, j, grid_world[i][j])])
 
-    print(jelly_list)
+    # print(jelly_list)
     grid_size = 50
 
     for event in eventloop:
@@ -305,7 +305,7 @@ def run_game(grid_world, eventloop):
                                 jelly_fall(grid_world, jelly_list)
                                 merge(jelly_list)
 
-                                print("jelly_list: ", jelly_list)
+                                # print("jelly_list: ", jelly_list)
 
                         elif event.button == 3: # right click
 
@@ -314,11 +314,8 @@ def run_game(grid_world, eventloop):
                                 jelly_item_move_right(grid_world, jelly_item, jelly_list)
                                 jelly_fall(grid_world, jelly_list)
                                 merge(jelly_list)
-                                print("jelly_list: ", jelly_list)
+                                # print("jelly_list: ", jelly_list)
 
-    
-            if detect_winning(jelly_list):
-                print("YOU WIN!")
 
     return grid_world, jelly_list
 
@@ -332,6 +329,7 @@ grid_world = [["w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", 
             ["w", "a", "a", "g", "a", "a", "a", "a", "a", "r", "a", "b", "a", "w"],
             ["w", "w", "b", "w", "w", "w", "g", "a", "w", "w", "w", "w", "w", "w"],
             ["w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w", "w"]]
+grid_size = 50
 
 if __name__ == '__main__':
     input_event = pygame.event.Event(pygame.MOUSEBUTTONDOWN)
