@@ -4,10 +4,9 @@ import copy
 
 # implementation of Breadth-First-Search
 
-def expand(grid_world):
+def expand(grid_world, jelly_list):
 
     child_state_list = []
-    _, jelly_list = env.run_game(grid_world, [])
 
     for jelly_item in jelly_list:
 
@@ -28,61 +27,76 @@ def expand(grid_world):
 
             # print("raw_jelly_list: ", jelly_list)
             temp_world = copy.deepcopy(grid_world)
+            temp_jelly_list = copy.deepcopy(jelly_list)
 
-            _, old_jelly_list = env.run_game(temp_world, [])
-
-            # print("old_jelly_list: ", old_jelly_list)
-
-            new_grid_world, new_jelly_list = env.run_game(temp_world, [input_event])
+            new_grid_world, new_jelly_list = env.run_game(temp_world, [input_event], temp_jelly_list)
 
             # print("raw_jelly_list: ", jelly_list)
 
             # print("new_jelly_list: ", new_jelly_list)
-            child_state_list.append(repr(new_grid_world))
+            if (repr(new_grid_world), repr(new_jelly_list)) not in child_state_list:
+                child_state_list.append((repr(new_grid_world), repr(new_jelly_list)))
 
     return child_state_list
 
-def is_goal(grid_world):
+def is_goal(jelly_list):
 
-    _, jelly_list = env.run_game(grid_world, [])
     return env.detect_winning(jelly_list)
         
-def breadth_first_search(grid_world):
+def breadth_first_search(grid_world, jelly_list):
     
-    frontier = [repr(grid_world)]
-    reached = [repr(grid_world)]
+    frontier = [(repr(grid_world), repr(jelly_list))]
+    reached = [(repr(grid_world), repr(jelly_list))]
 
     while frontier:
-        grid_world = eval(frontier.pop(0))
 
-        child_state_list = expand(grid_world)
+        temp_tuple = frontier.pop(0)
+        temp_grid_world = eval(temp_tuple[0])
+        temp_jelly_list = eval(temp_tuple[1])
+
+        child_state_list = expand(temp_grid_world, temp_jelly_list)
 
         # print("child_state_list: ", len(child_state_list))
 
-        for child_world in child_state_list:
+        for tuple_ in child_state_list:
             
-            temp_world = eval(child_world)
-            if is_goal(temp_world):
-                return reached, temp_world
+            child_jelly_list = eval(tuple_[1])
+            if is_goal(child_jelly_list):
+                print("Goal!")
+                return reached
 
-            if child_world not in reached:
-                reached.append(child_world)
-                frontier.append(child_world)
+            if tuple_ not in reached:
+                reached.append(tuple_)
+                frontier.append(tuple_)
 
         print("reached: ", len(reached))
         print("frontier: ", len(frontier))
 
     print("Failure!")
+    return reached
 
 grid_world = env.grid_world
 
-child_state_list = expand(grid_world)
+grid_world, jelly_list = env.run_game(grid_world, [])
+
+print(jelly_list)
+
+child_state_list = expand(grid_world, jelly_list)
+
+print(len(child_state_list))
+
+for (state, jelly_list) in child_state_list:
+    print(eval(jelly_list))
 
 # for child_state in child_state_list:
 #     env.draw_world(eval(child_state))
 
-reached, child_world = breadth_first_search(grid_world)
+# reached = breadth_first_search(grid_world, jelly_list)
 
-print(len(reached))
+# for state in reached:
+#     if is_goal(eval(state)):
+#         print("Goal！")
+#         break
+     
 
-env.draw_world(child_world)
+# env.draw_world(child_world)
