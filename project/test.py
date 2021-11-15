@@ -333,9 +333,10 @@ grid_size = 50
 
 if __name__ == '__main__':
     input_event = pygame.event.Event(pygame.MOUSEBUTTONDOWN)
-    input_event.pos = (3 * 50 + 1, 7 * 50 + 1)
-    input_event.button = 1
+    input_event.pos = (8 * 50 + 1, 5 * 50 + 1)
+    input_event.button = 3
     eventloop = []
     eventloop.append(input_event)
     grid_world, jelly_list = run_game(grid_world, eventloop)
+    print(jelly_list)
     draw_world(grid_world)
