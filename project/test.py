@@ -201,7 +201,7 @@ def draw_world(grid_world):
 
     pygame.display.update()
     import time
-    time.sleep(3)
+    time.sleep(1)
     pygame.quit()
 
 def jelly_item_move_left(grid_world, jelly_item, jelly_list):
