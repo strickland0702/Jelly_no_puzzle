@@ -1,6 +1,10 @@
-import test as env
+from time import time
+import dr_test as env
 import pygame
 from copy import deepcopy
+from wall import Wall
+from jelly import Jelly
+import time 
 
 class SearchTree:
     root = None
@@ -50,7 +54,7 @@ def expand_node(node:TreeNode, tree:SearchTree, next_expand_list = []):
             input_event.pos = (x_axis * grid_size + 1, y_axis * grid_size + 1)
             input_event.button = action
             eventloop = [input_event]
-            grid_world,jelly_list = env.run_game(deepcopy(node.grid_world), eventloop, deepcopy(node.jelly_list))
+            grid_world,jelly_list = env.run_game(deepcopy(node.grid_world), eventloop)
             if repr(grid_world) not in tree.node_dict:
                 next_node = TreeNode(grid_world, jelly_list)
                 tree.node_dict[repr(grid_world)] = next_node
@@ -59,6 +63,39 @@ def expand_node(node:TreeNode, tree:SearchTree, next_expand_list = []):
             if repr(grid_world) not in node.next:
                 node.next.append(repr(grid_world))
     return next_expand_list
+
+
+def draw_world(sequence_result):
+    pygame.init()
+    screen_width = 700 # x-axis
+    screen_height = 500 # y-axis
+    screen = pygame.display.set_mode((screen_width, screen_height))
+    pygame.display.set_caption('Jelly No Puzzle')
+    grid_size = 50
+    
+    for grid_world in sequence_result:
+        screen.fill((0, 0, 0))
+
+        for i in range(10):
+            for j in range(14):
+                if grid_world[i][j] == "w":
+                    wall = Wall(j, i, 1, 1, grid_size)
+                    pygame.draw.rect(screen, wall.color, wall)
+                elif grid_world[i][j] == "r":
+                    jelly = Jelly(j ,i, 1, 1, grid_size, color=(255, 0, 0))
+                    pygame.draw.rect(screen, jelly.color, jelly)
+                elif grid_world[i][j] == "g":
+                    jelly = Jelly(j ,i, 1, 1, grid_size, color=(0, 255, 0))
+                    pygame.draw.rect(screen, jelly.color, jelly)
+                elif grid_world[i][j] == "b":
+                    jelly = Jelly(j ,i, 1, 1, grid_size, color=(0, 0, 255))
+                    pygame.draw.rect(screen, jelly.color, jelly)
+                else:
+                    pass
+
+        pygame.display.update()
+        time.sleep(0.5)
+
 
 grid_world = env.grid_world
 grid_size = env.grid_size
@@ -80,10 +117,9 @@ while len(next_expand_list) != 0:
 print('build finished')
 
 for i in tree.node_dict.values():
-    if env.detect_winning(i.jelly_list):
+    if env.detect_winning(i.grid_world, len(env.color_set)):
         goal_state = i.grid_world
 
 _, result = tree.dfs_expand_node(tree.root, goal_state, [])
 
-for i in result:
-    env.draw_world(i)
+draw_world(result)
